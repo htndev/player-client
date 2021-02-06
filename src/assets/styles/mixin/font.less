@@ -1,0 +1,20 @@
+.font-face(@font-family, @font-path, @font-type, @font-weight) {
+  @font-face {
+    font-family: @font-family;
+    src: url('@{font-path}') format(@font-type);
+    font-weight: @font-weight;
+  }
+}
+
+.font-face-italic(@font-family, @font-path, @font-type, @font-weight) {
+  @font-face {
+    font-family: @font-family;
+    src: local(@font-family) url('@{font-path}') format(@font-type);
+    font-weight: @font-weight;
+    font-style: italic;
+  }
+}
+
+.build-font-path(@path, @weight, @ext) {
+  @return: '@{path}-@{weight}.@{ext}';
+}

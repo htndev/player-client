@@ -1,0 +1,33 @@
+@import './mixin/font.less';
+
+@fonts-path: '../../fonts';
+@rubik: 'Rubik';
+@rubik-lowercase: 'rubik';
+@font-ext: 'ttf';
+@font-type: 'truetype';
+@rubik-path: '@{fonts-path}/@{rubik-lowercase}';
+@rubik-font: '@{rubik-path}/@{rubik-lowercase}';
+
+.build-graphic-path(@type) {
+  @return: .build-font-path(@rubik-font, @type, @font-ext)[@return];
+}
+
+.font-face(@rubik, .build-graphic-path('light')[@return], @font-type, 300);
+
+.font-face-italic(@rubik, .build-graphic-path('light-italic')[@return], @font-type, 300);
+
+.font-face(@rubik, .build-graphic-path('regular')[@return], @font-type, 400);
+
+.font-face-italic(@rubik, .build-graphic-path('regular-italic')[@return], @font-type, 400);
+
+.font-face(@rubik, .build-graphic-path('medium')[@return], @font-type, 600);
+
+.font-face-italic(@rubik, .build-graphic-path('medium-italic')[@return], @font-type, 600);
+
+.font-face(@rubik, .build-graphic-path('bold')[@return], @font-type, 700);
+
+.font-face-italic(@rubik, .build-graphic-path('bold-italic')[@return], @font-type, 700);
+
+.font-face(@rubik, .build-graphic-path('black')[@return], @font-type, 900);
+
+.font-face-italic(@rubik, .build-graphic-path('black-italic')[@return], @font-type, 900);
