@@ -4,9 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-toolbar-title> Quasar App </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
@@ -63,28 +61,20 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
-      <HelloWorld />
-    </q-page-container>
+    <q-page-container> </q-page-container>
   </q-layout>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue';
+<script lang="ts">
+import { Vue, Component } from 'vue-property-decorator';
+import { UserModule } from '@/store/modules/user';
 
-export default {
-  name: 'LayoutDefault',
+@Component
+export default class App extends Vue {
+  leftDrawerOpen = false;
 
-  components: {
-    HelloWorld
-  },
-
-  data() {
-    return {
-      leftDrawerOpen: false
-    };
+  async created() {
+    UserModule.initUser();
   }
-};
+}
 </script>
-
-<style></style>

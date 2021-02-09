@@ -12,5 +12,17 @@ module.exports = {
     }
   },
 
-  transpileDependencies: ['quasar']
+  transpileDependencies: ['quasar'],
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-svg-inline-loader')
+      .loader('vue-svg-inline-loader')
+      .end()
+      .rule('graphql')
+      .test(/\.(graphql|gql)$/)
+      .use('graphql-tag/loader')
+      .loader('graphql-tag/loader')
+      .end();
+  }
 };

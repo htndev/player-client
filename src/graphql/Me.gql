@@ -1,0 +1,13 @@
+{
+  me {
+    id
+    username
+    email
+    location {
+      code
+      city
+      region
+      country
+    }
+  }
+}
