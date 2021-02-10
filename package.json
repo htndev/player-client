@@ -11,6 +11,8 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "lodash": "^4.17.20",
+    "omit-deep-lodash": "^1.1.5",
     "quasar": "^1.0.0",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
@@ -24,6 +26,8 @@
     "vuex-module-decorators": "^1.0.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.168",
+    "@types/omit-deep-lodash": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "~4.5.0",

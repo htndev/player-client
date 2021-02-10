@@ -2,8 +2,6 @@ import { ApiEndpoint } from './constants';
 
 export type Tokens = Record<ApiEndpoint, string>;
 
-export type GraphQLTypename = { __typename: string };
-
 export type StatusResponse = { status: number; message: string };
 
 export type Nullable<T> = T | null;

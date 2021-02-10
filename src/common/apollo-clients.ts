@@ -5,6 +5,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { createHttpLink as createApolloHttpLink } from 'apollo-link-http';
+import deepOmit from 'omit-deep-lodash';
 
 import { ApiEndpoint } from './constants';
 
@@ -27,9 +28,13 @@ const appendAuthToken = (token: ApiEndpoint): ApolloLink => {
   return context as never;
 };
 
+const removeTypename = new ApolloLink((operation, forward) => {
+  return forward(operation).map(response => deepOmit(response, '__typename'));
+});
+
 const createApolloClient = (link: ApolloLink, endpoint: ApiEndpoint) =>
   new ApolloClient({
-    link: appendAuthToken(endpoint).concat(link),
+    link: ApolloLink.from([appendAuthToken(endpoint), removeTypename, link]),
     connectToDevTools: true,
     cache: new InMemoryCache(),
     defaultOptions: {

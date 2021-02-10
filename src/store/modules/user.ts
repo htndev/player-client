@@ -1,13 +1,13 @@
-import { redirect } from '@/common/redirect';
-import { HttpStatus, CLIENTS } from '@/common/constants';
 import { passport } from '@/common/apollo-clients';
-import { Tokens, GraphQLTypename, Nullable, GraphQLError, User as UserType } from '@/common/types';
-import { excludeTypename } from '@/common/object';
+import { CLIENTS, HttpStatus } from '@/common/constants';
+import { redirect } from '@/common/redirect';
+import { GraphQLError, Nullable, Tokens, User as UserType } from '@/common/types';
 import store from '@/store';
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 
 @Module({ dynamic: true, store, name: 'user', namespaced: true })
 export class User extends VuexModule {
+  private isUserFetching = false;
   private identity: Nullable<UserType> = null;
 
   tokens: Tokens = {
@@ -29,6 +29,21 @@ export class User extends VuexModule {
     this.identity = { ...user };
   }
 
+  @Mutation
+  USER_FETCHING_STARTED() {
+    this.isUserFetching = true;
+  }
+
+  @Mutation
+  USER_FETCHING_COMPLETED() {
+    this.isUserFetching = false;
+  }
+
+  @Mutation
+  USER_FETCHING_FAILED() {
+    this.isUserFetching = false;
+  }
+
   @Action
   async initUser() {
     await this.fetchTokens();
@@ -38,7 +53,7 @@ export class User extends VuexModule {
   @Action
   async fetchTokens() {
     try {
-      const { data, errors } = await passport.query<{ tokens: Tokens & GraphQLTypename }>({
+      const { data, errors } = await passport.query<{ tokens: Tokens }>({
         query: require('@/graphql/Tokens.gql')
       });
 
@@ -46,9 +61,7 @@ export class User extends VuexModule {
         throw errors;
       }
 
-      const tokens = excludeTypename(data.tokens);
-
-      this.SET_TOKENS(tokens);
+      this.SET_TOKENS(data.tokens);
     } catch (e) {
       const [
         {
@@ -63,21 +76,25 @@ export class User extends VuexModule {
         return;
       }
     }
-
-    // const tokens = excludeTypename(response);
-
-    // this.SET_TOKENS(tokens);
   }
 
   @Action
   async identify() {
     try {
-      const { data, errors } = await passport.query({
+      this.USER_FETCHING_STARTED();
+
+      const { data, errors } = await passport.query<{ me: UserType }>({
         query: require('@/graphql/Me.gql')
       });
-      console.log(data);
-      console.log(errors);
+
+      if (errors) {
+        throw errors;
+      }
+      this.USER_FETCHING_COMPLETED();
+
+      this.SET_USER(data.me);
     } catch (e) {
+      this.USER_FETCHING_FAILED();
       console.log(e);
     }
   }
