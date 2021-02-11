@@ -2,7 +2,7 @@ export const isUndefined = (obj: unknown): obj is undefined => typeof obj === 'u
 
 export const isNull = (obj: unknown): obj is null => obj === null;
 
-export const isNil = (obj: unknown): obj is null | undefined => isUndefined(obj) || isNil(obj);
+export const isNil = (obj: unknown): obj is null | undefined => isUndefined(obj) || isNull(obj);
 
 export const isEmptyObject = (obj: object): boolean => !isNil(obj) && !Object.keys(obj).length;
 

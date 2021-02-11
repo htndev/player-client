@@ -3,6 +3,7 @@
     id
     username
     email
+    avatar
     location {
       code
       city

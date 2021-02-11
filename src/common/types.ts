@@ -1,6 +1,8 @@
+import { colors } from './colors';
 import { ApiEndpoint } from './constants';
 
 export type Tokens = Record<ApiEndpoint, string>;
+export type AppColors = keyof typeof colors;
 
 export type StatusResponse = { status: number; message: string };
 
@@ -20,6 +22,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  avatar: string | null;
   location: {
     city: string;
     code: string;

@@ -1,5 +1,7 @@
+import { isNil } from './../../common/object';
 import { passport } from '@/common/apollo-clients';
 import { CLIENTS, HttpStatus } from '@/common/constants';
+import { isNull } from '@/common/object';
 import { redirect } from '@/common/redirect';
 import { GraphQLError, Nullable, Tokens, User as UserType } from '@/common/types';
 import store from '@/store';
@@ -12,11 +14,24 @@ export class User extends VuexModule {
 
   tokens: Tokens = {
     passport: '',
-    studio: ''
+    studio: '',
+    media: ''
   };
 
   get user(): Nullable<UserType> {
     return this.identity;
+  }
+
+  get hasAvatar(): boolean {
+    return this.isUserInitialized ? !isNil(this.user?.avatar) : false;
+  }
+
+  get avatar(): Nullable<string> {
+    return this.hasAvatar ? (this.user as UserType).avatar : null;
+  }
+
+  get isUserInitialized(): boolean {
+    return !isNull(this.user);
   }
 
   @Mutation
@@ -95,7 +110,6 @@ export class User extends VuexModule {
       this.SET_USER(data.me);
     } catch (e) {
       this.USER_FETCHING_FAILED();
-      console.log(e);
     }
   }
 }

@@ -12,7 +12,8 @@ export const CLIENTS = {
 
 export enum ApiEndpoint {
   Passport = 'passport',
-  Studio = 'studio'
+  Studio = 'studio',
+  Media = 'media'
 }
 
 export enum HttpStatus {

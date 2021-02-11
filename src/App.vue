@@ -1,14 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
-      <q-toolbar>
-        <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu" />
-
-        <q-toolbar-title> Quasar App </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
-    </q-header>
+    <the-header />
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered content-class="bg-grey-2">
       <q-list>
@@ -67,9 +59,10 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import TheHeader from '@/components/TheHeader.vue';
 import { UserModule } from '@/store/modules/user';
 
-@Component
+@Component({ components: { TheHeader } })
 export default class App extends Vue {
   leftDrawerOpen = false;
 
