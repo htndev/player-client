@@ -2,15 +2,24 @@
   <q-form>
     <q-input
       v-model="internalValue"
+      ref="field"
       outlined
-      :label="$t('username')"
+      lazy-rules
+      :label="label"
       :rules="rules"
+      :maxlength="maxLength"
       @focus="onFocusChanged(true)"
       @blur="onFocusChanged(false)"
     />
     <transition name="fade">
-      <div v-show="showButtons" class="q-mt-xs">
-        <q-btn label="Update" text-color="white" :style="{ background: updateButtonColor }" />
+      <div v-show="showButtons" class="q-mt-md">
+        <q-btn
+          label="Update"
+          text-color="white"
+          :style="{ background: updateButtonColor }"
+          :disable="hasError()"
+          @click="update"
+        />
         <q-btn label="Cancel" flat @click="cancel" />
       </div>
     </transition>
@@ -23,19 +32,34 @@ import { colors } from '@/common/colors';
 
 @Component
 export default class SettingsConfirmationField extends Vue {
+  $refs!: { field: any };
   updateButtonColor = colors.darkPurple;
   focused = false;
 
   @Prop({ type: String })
   value!: string;
 
+  @Prop({ type: String, default: '' })
+  label!: string;
+
   @Prop({ type: Array, default: () => [] })
   rules!: Function[];
+
+  @Prop({ type: Number, default: 255 })
+  maxLength!: number;
 
   internalValue = this.value;
 
   get showButtons(): boolean {
     return this.focused || this.internalValue !== this.value;
+  }
+
+  get valueChanged(): boolean {
+    return this.internalValue !== this.value;
+  }
+
+  hasError() {
+    return this.$refs.field ? this.$refs.field.hasError : true;
   }
 
   @Watch('value')
@@ -49,6 +73,18 @@ export default class SettingsConfirmationField extends Vue {
 
   cancel() {
     this.internalValue = this.value;
+  }
+
+  update() {
+    if (!this.valueChanged) {
+      return;
+    }
+
+    if (this.hasError()) {
+      return;
+    }
+
+    this.$emit('update', this.internalValue);
   }
 }
 </script>

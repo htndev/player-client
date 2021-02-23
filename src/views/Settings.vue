@@ -50,10 +50,6 @@ export default class Settings extends Vue {
   get splitterModel(): number {
     return this.$q.screen.width > 420 ? 20 : 30;
   }
-
-  created() {
-    console.log(GeneralSettings.name);
-  }
 }
 </script>
 

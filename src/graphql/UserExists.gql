@@ -1,0 +1,5 @@
+query userExists($search: ExistsUserInput!) {
+  userExists(search: $search) {
+    exists
+  }
+}

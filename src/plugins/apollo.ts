@@ -1,5 +1,5 @@
 import { passport } from '@/common/apollo-clients';
-import { ApiEndpoint } from '@/common/constants';
+import { ApiEndpoint } from '@xbeat/toolkit';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
