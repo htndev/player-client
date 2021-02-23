@@ -8,6 +8,7 @@ export type StatusResponse = { status: number; message: string };
 
 export type Nullable<T> = T | null;
 
+export type StatusType = { status: number; message?: string };
 export interface GraphQLError {
   message: string;
   path: string[];

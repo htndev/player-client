@@ -81,5 +81,9 @@ export default class Logo extends Vue {
   &.extra-large {
     .size(@extra-large);
   }
+
+  svg {
+    outline: none;
+  }
 }
 </style>

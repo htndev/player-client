@@ -1,0 +1,78 @@
+@import './colors.less';
+
+@colors: dark-purple @dark-purple, purple @purple, light-gray @light-gray, light-purple @light-purple, white @white,
+  secondary @secondary, black @black;
+
+.create-colors-helper(@i: length(@colors)) when (@i > 0) {
+  .create-colors-helper(@i - 1);
+  @value: extract(@colors, @i);
+  @key: extract(@value, 1);
+  @color: extract(@value, 2);
+
+  .color-@{key} {
+    color: @color;
+  }
+
+  .bg-@{key} {
+    background: @color;
+  }
+}
+
+.create-colors-helper();
+
+@text-decorations: dashed, dotted, double, line-through, none, overline, solid, underline, wavy;
+
+.create-text-decoration-helper(@i: length(@text-decorations)) when (@i > 0) {
+  .create-text-decoration-helper(@i - 1);
+  @value: extract(@text-decorations, @i);
+
+  .text-decoration-@{value} {
+    text-decoration: @value;
+  }
+}
+
+.create-text-decoration-helper();
+
+.create-font-size-helper(@size: 10) when (@size <= 24) {
+  .create-font-size-helper(@size + 2);
+
+  .font-size-@{size} {
+    font-size: ~'@{size}px';
+  }
+}
+
+.create-font-size-helper();
+
+.create-paddings-helper(@i) when (@i >= 0) {
+  @top-bottom: @i;
+  @left-right: @i * 2;
+  @selector: ~'@{top-bottom}-@{left-right}';
+  @value: ~'@{top-bottom}px' ~'@{left-right}px';
+  .p-@{selector} {
+    padding: @value;
+  }
+
+  .p-@{top-bottom} {
+    padding: ~'@{top-bottom}px';
+  }
+
+  .p-@{left-right} {
+    padding: ~'@{left-right}px';
+  }
+
+  .m-@{selector} {
+    margin: @value;
+  }
+
+  .m-@{top-bottom} {
+    margin: ~'@{top-bottom}px';
+  }
+
+  .m-@{left-right} {
+    margin: ~'@{left-right}px';
+  }
+
+  .create-paddings-helper(@i - 1);
+}
+
+.create-paddings-helper(10);

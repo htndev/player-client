@@ -1,4 +1,4 @@
-export const PROJECT_TITLE = 'xBeat';
+import { Tokens } from '@/common/types';
 
 export const ENDPOINTS = {
   PASSPORT: process.env.PASSPORT_URL || 'http://localhost:3000',
@@ -10,13 +10,10 @@ export const CLIENTS = {
   HOMEPAGE: process.env.HOMEPAGE_URL || 'http://localhost:7070'
 };
 
-export enum ApiEndpoint {
-  Passport = 'passport',
-  Studio = 'studio',
-  Media = 'media'
-}
+export const EMPTY_TOKENS: Tokens = {
+  passport: '',
+  studio: '',
+  media: ''
+};
 
-export enum HttpStatus {
-  NotFound = 404,
-  Unauthorized = 401
-}
+export const PLAYER_REDIRECT_QUERY_PARAM = `?to=player`;

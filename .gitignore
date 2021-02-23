@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+# Localization
+src/i18n/*.json
+
 
 # local env files
 .env.local

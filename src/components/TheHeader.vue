@@ -1,68 +1,78 @@
 <template>
-  <q-header elevated class="header-bg">
+  <q-header elevated class="header">
     <q-toolbar>
       <q-btn flat dense round @click="changedDrawer" aria-label="Menu" icon="menu" />
-      <logo small />
+      <router-link to="/">
+        <logo small />
+      </router-link>
       <q-space />
-      <q-avatar :color="avatarColor">
-        <span v-if="!avatar">{{ username }}</span>
-        <template v-else>
-          <img @load="onAvatarLoaded" :src="avatar" v-if="avatarLoaded" />
-          <q-spinner v-else />
+      <avatar :avatar="avatar" :username="username">
+        <template #onclick>
+          <q-item dense class="items-center justify-end">
+            <q-item-label lines="1" class="text-weight-bold font-size-16 full-width text-right">
+              <router-link :to="`/u/${username}`" class="text-decoration-none color-secondary">
+                {{ username }}
+                <q-tooltip
+                  v-if="showUsernaneTooltip"
+                  anchor="top middle"
+                  self="bottom middle"
+                  content-class="bg-dark-purple"
+                >
+                  {{ username }}
+                </q-tooltip>
+              </router-link>
+            </q-item-label>
+          </q-item>
+          <q-item class="items-center justify-end" clickable>
+            <q-item-label lines="1">
+              <router-link to="/settings" class="text-decoration-none color-black font-size-14">
+                {{ $t('settings.title') }}
+              </router-link>
+            </q-item-label>
+          </q-item>
+          <q-item class="items-center justify-end" clickable>
+            <q-item-label lines="1" @click="logout">{{ $t('logout') }}</q-item-label>
+          </q-item>
         </template>
-      </q-avatar>
+      </avatar>
     </q-toolbar>
   </q-header>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
 import Logo from '@/components/Common/Logo.vue';
+import Avatar from '@/components/Common/Avatar.vue';
 import { UserModule } from '@/store/modules/user';
-import { AppColors, Nullable, User } from '@/common/types';
-import { isNil } from '@/common/object';
+import { DrawerModule } from '@/store/modules/drawer';
+import { Nullable, User } from '@/common/types';
 
 @Component({
-  components: { Logo }
+  components: { Logo, Avatar }
 })
 export default class TheHeader extends Vue {
-  avatarLoaded = false;
-
-  get avatarColor(): AppColors {
-    return 'purple';
-  }
-
   get user(): Nullable<User> {
     return UserModule.user;
   }
 
-  get avatar(): Nullable<string> {
-    return UserModule.avatar;
+  get username(): string {
+    return this.user ? this.user.username : '';
   }
 
-  get username(): string {
-    return UserModule.isUserInitialized ? (UserModule.hasAvatar ? '' : (this.user as User).username) : '';
+  get avatar(): string | null {
+    return this.user ? this.user.avatar : '';
+  }
+
+  get showUsernaneTooltip(): boolean {
+    return this.username.length > 12;
   }
 
   changedDrawer() {
-    console.log('Changed drawer');
+    DrawerModule.toggle();
   }
 
-  created() {
-    // console.log(this.)
-  }
-
-  onAvatarLoaded(data: any) {
-    console.log(data);
-    console.log('avatar loaded');
-    this.avatarLoaded = true;
-  }
-
-  @Watch('avatar')
-  onAvatarChanged(newValue: Nullable<string>) {
-    if (isNil(newValue)) {
-      return;
-    }
+  logout() {
+    UserModule.logout();
   }
 }
 </script>
@@ -70,7 +80,7 @@ export default class TheHeader extends Vue {
 <style lang="less" scoped>
 @import '../assets/styles/colors.less';
 
-.header-bg {
+.header {
   background: @purple;
 }
 </style>
