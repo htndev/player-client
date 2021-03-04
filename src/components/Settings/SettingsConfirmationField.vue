@@ -1,5 +1,5 @@
 <template>
-  <q-form>
+  <q-form class="q-mb-sm">
     <q-input
       v-model="internalValue"
       ref="field"
@@ -8,11 +8,12 @@
       :label="label"
       :rules="rules"
       :maxlength="maxLength"
+      :loading="loading"
       @focus="onFocusChanged(true)"
       @blur="onFocusChanged(false)"
     />
     <transition name="fade">
-      <div v-show="showButtons" class="q-mt-md">
+      <div v-show="showButtons" class="q-mt-sm">
         <q-btn
           label="Update"
           text-color="white"
@@ -35,6 +36,7 @@ export default class SettingsConfirmationField extends Vue {
   $refs!: { field: any };
   updateButtonColor = colors.darkPurple;
   focused = false;
+  padding = 'q-pt-sm';
 
   @Prop({ type: String })
   value!: string;
@@ -47,6 +49,9 @@ export default class SettingsConfirmationField extends Vue {
 
   @Prop({ type: Number, default: 255 })
   maxLength!: number;
+
+  @Prop({ type: Boolean, default: false })
+  loading!: boolean;
 
   internalValue = this.value;
 

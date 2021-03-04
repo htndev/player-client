@@ -21,8 +21,7 @@
 </template>
 
 <script lang="ts">
-import { isNil } from '@xbeat/toolkit';
-import { Nullable } from '@/common/types';
+import { isNil, Nullable } from '@xbeat/toolkit';
 import { Vue, Prop, Component, Watch } from 'vue-property-decorator';
 
 @Component

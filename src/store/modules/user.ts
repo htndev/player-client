@@ -1,10 +1,16 @@
+import Vue from 'vue';
 import { passport } from '@/common/apollo-clients';
 import { CLIENTS, EMPTY_TOKENS, PLAYER_REDIRECT_QUERY_PARAM } from '@/common/constants';
 import { redirect } from '@/common/redirect';
-import { GraphQLError, Nullable, StatusType, Tokens, User as UserType } from '@/common/types';
+import { Tokens, User as UserType } from '@/common/types';
+import LogoutMutation from '@/graphql/Logout.gql';
+import MeQuery from '@/graphql/Me.gql';
+import TokensQuery from '@/graphql/Tokens.gql';
 import store from '@/store';
-import { HttpStatus, isNil, isNull } from '@xbeat/toolkit';
+import { GraphQLError, StatusType } from '@xbeat/client-toolkit';
+import { HttpStatus, isNil, isNull, Nullable } from '@xbeat/toolkit';
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import UpdateUserInfoMutation from '@/graphql/UpdateUserInfo.gql';
 
 @Module({ dynamic: true, store, name: 'user', namespaced: true })
 export class User extends VuexModule {
@@ -46,6 +52,16 @@ export class User extends VuexModule {
   }
 
   @Mutation
+  SET_USERNAME(username: string) {
+    Vue.set(this.identity as UserType, 'username', username);
+  }
+
+  @Mutation
+  SET_EMAIL(email: string) {
+    Vue.set(this.identity as UserType, 'email', email);
+  }
+
+  @Mutation
   USER_FETCHING_STARTED() {
     this.isUserFetching = true;
   }
@@ -70,7 +86,7 @@ export class User extends VuexModule {
   async fetchTokens() {
     try {
       const { data, errors } = await passport.query<{ tokens: Tokens }>({
-        query: require(`@/graphql/Tokens.gql`)
+        query: TokensQuery
       });
 
       if (errors) {
@@ -100,7 +116,7 @@ export class User extends VuexModule {
       this.USER_FETCHING_STARTED();
 
       const { data, errors } = await passport.query<{ me: UserType }>({
-        query: require(`@/graphql/Me.gql`)
+        query: MeQuery
       });
 
       if (errors) {
@@ -115,10 +131,48 @@ export class User extends VuexModule {
   }
 
   @Action
+  async updateUsername(username: string): Promise<void> {
+    try {
+      await passport.mutate<{ updateUserInfo: StatusType }>({
+        mutation: UpdateUserInfoMutation,
+        variables: {
+          userInfo: {
+            username
+          }
+        }
+      });
+
+      this.SET_USERNAME(username);
+      await this.fetchTokens();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  @Action
+  async updateEmail(email: string): Promise<void> {
+    try {
+      await passport.mutate<{ updateUserInfo: StatusType }>({
+        mutation: UpdateUserInfoMutation,
+        variables: {
+          userInfo: {
+            email
+          }
+        }
+      });
+
+      this.SET_EMAIL(email);
+      await this.fetchTokens();
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  @Action
   async logout() {
     try {
       const { errors } = await passport.mutate<{ logout: StatusType }>({
-        mutation: require(`@/graphql/Logout.gql`)
+        mutation: LogoutMutation
       });
 
       if (errors) {

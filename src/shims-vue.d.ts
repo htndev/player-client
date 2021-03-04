@@ -3,4 +3,4 @@ declare module '*.vue' {
   export default Vue;
 }
 
-declare module '.gql';
+declare module '*.gql';

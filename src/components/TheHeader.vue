@@ -45,7 +45,8 @@ import Logo from '@/components/Common/Logo.vue';
 import Avatar from '@/components/Common/Avatar.vue';
 import { UserModule } from '@/store/modules/user';
 import { DrawerModule } from '@/store/modules/drawer';
-import { Nullable, User } from '@/common/types';
+import { User } from '@/common/types';
+import { Nullable } from '@xbeat/toolkit';
 
 @Component({
   components: { Logo, Avatar }

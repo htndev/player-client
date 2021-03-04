@@ -1,0 +1,5 @@
+mutation updateUserInfo($userInfo: UpdateUserInfoInput!) {
+  updateUserInfo(updateUserInfoInput: $userInfo) {
+    status
+  }
+}

@@ -47,7 +47,8 @@ import NavigationDrawerItem from '@/components/NavigationDrawer/NavigationDrawer
 import PlayingIndication from '@/components/Common/PlayingIndication.vue';
 import { DrawerModule } from '@/store/modules/drawer';
 import { UserModule } from '@/store/modules/user';
-import { Nullable, User } from '@/common/types';
+import { User } from '@/common/types';
+import { Nullable } from '@xbeat/toolkit';
 import { TranslateResult } from 'vue-i18n';
 
 @Component({ components: { NavigationDrawerItem, PlayingIndication } })
