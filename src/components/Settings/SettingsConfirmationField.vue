@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import { colors } from '@/common/colors';
+import { colors } from '@/common/constants/colors';
 
 @Component
 export default class SettingsConfirmationField extends Vue {

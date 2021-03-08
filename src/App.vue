@@ -16,11 +16,13 @@ import TheHeader from '@/components/TheHeader.vue';
 import NavigationDrawer from '@/components/NavigationDrawer/NavigationDrawer.vue';
 import Container from '@/components/Common/Container.vue';
 import { UserModule } from '@/store/modules/user';
+import { initialize } from './common/utils/initialize-store';
+import { PreferencesModule } from './store/modules/preferences';
 
 @Component({ components: { TheHeader, NavigationDrawer, Container } })
 export default class App extends Vue {
   async created() {
-    UserModule.initUser();
+    await initialize(UserModule, PreferencesModule);
   }
 }
 </script>

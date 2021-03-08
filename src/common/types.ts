@@ -1,5 +1,7 @@
+import { Language } from '@/common/constants/language';
 import { ApiEndpoint } from '@xbeat/toolkit';
-import { colors } from './colors';
+
+import { colors } from './constants/colors';
 
 export type Tokens = Record<ApiEndpoint, string>;
 
@@ -16,4 +18,8 @@ export interface User {
     country: string;
     region: string;
   };
+}
+
+export interface Preferences {
+  language: Language;
 }

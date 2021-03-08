@@ -16,6 +16,17 @@
       :max-length="maxLegth.email"
       @update="updateEmail"
     />
+    <q-select
+      outlined
+      v-model="currentLanguage"
+      :options="languages"
+      :loading="languageLoading"
+      :label="$t('settings.language')"
+    >
+      <template #prepend>
+        <q-icon name="language" />
+      </template>
+    </q-select>
   </container>
 </template>
 
@@ -30,7 +41,9 @@ import { usernameRegexp, FIELD_LENGTH } from '@xbeat/toolkit';
 import UserExistsQuery from '@/graphql/UserExists.gql';
 import { ExistsType } from '@xbeat/client-toolkit';
 import { Nullable } from '@xbeat/toolkit';
-import { isEmail } from '@/common/is-email';
+import { isEmail } from '@/common/utils/is-email';
+import { LanguageWithName } from '@/common/constants/language';
+import { PreferencesModule } from '@/store/modules/preferences';
 
 type Rule = (value: string) => true | TranslateResult | Promise<boolean | TranslateResult>;
 
@@ -89,6 +102,22 @@ export default class GeneralSettings extends Vue {
     return this.user ? this.user.email : '';
   }
 
+  get languages() {
+    return PreferencesModule.languages;
+  }
+
+  get languageLoading(): boolean {
+    return PreferencesModule.loading.language;
+  }
+
+  get currentLanguage(): LanguageWithName {
+    return PreferencesModule.currentLanguage;
+  }
+
+  set currentLanguage({ value }: LanguageWithName) {
+    PreferencesModule.changeLanguage(value);
+  }
+
   get usernameRules(): Rule[] {
     return [
       this.rules.notEmpty,
@@ -109,12 +138,16 @@ export default class GeneralSettings extends Vue {
     ];
   }
 
-  updateUsername(username: string) {
-    UserModule.updateUsername(username);
+  async updateUsername(username: string) {
+    this.loading.username = true;
+    await UserModule.updateUsername(username);
+    this.loading.username = false;
   }
 
-  updateEmail(email: string) {
-    UserModule.updateEmail(email);
+  async updateEmail(email: string) {
+    this.loading.email = true;
+    await UserModule.updateEmail(email);
+    this.loading.email = false;
   }
 }
 </script>

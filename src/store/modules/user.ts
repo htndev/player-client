@@ -1,19 +1,20 @@
-import Vue from 'vue';
-import { passport } from '@/common/apollo-clients';
-import { CLIENTS, EMPTY_TOKENS, PLAYER_REDIRECT_QUERY_PARAM } from '@/common/constants';
-import { redirect } from '@/common/redirect';
+import { passport } from '@/common/apollo/passport';
+import { CLIENTS, EMPTY_TOKENS, PLAYER_REDIRECT_QUERY_PARAM } from '@/common/constants/constants';
+import { InitializeStore } from '@/common/utils/initialize-store';
+import { redirect } from '@/common/utils/redirect';
 import { Tokens, User as UserType } from '@/common/types';
 import LogoutMutation from '@/graphql/Logout.gql';
 import MeQuery from '@/graphql/Me.gql';
 import TokensQuery from '@/graphql/Tokens.gql';
+import UpdateUserInfoMutation from '@/graphql/UpdateUserInfo.gql';
 import store from '@/store';
 import { GraphQLError, StatusType } from '@xbeat/client-toolkit';
 import { HttpStatus, isNil, isNull, Nullable } from '@xbeat/toolkit';
+import Vue from 'vue';
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import UpdateUserInfoMutation from '@/graphql/UpdateUserInfo.gql';
 
 @Module({ dynamic: true, store, name: 'user', namespaced: true })
-export class User extends VuexModule {
+export class User extends VuexModule implements InitializeStore {
   private isUserFetching = false;
   private identity: Nullable<UserType> = null;
 
@@ -77,7 +78,7 @@ export class User extends VuexModule {
   }
 
   @Action
-  async initUser() {
+  async initialize() {
     await this.fetchTokens();
     await this.identify();
   }
