@@ -21,7 +21,7 @@
       v-model="currentLanguage"
       :options="languages"
       :loading="languageLoading"
-      :label="$t('settings.language')"
+      :label="$t('settings.language.name')"
     >
       <template #prepend>
         <q-icon name="language" />

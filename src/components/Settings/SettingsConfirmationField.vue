@@ -7,6 +7,7 @@
       lazy-rules
       :label="label"
       :rules="rules"
+      :type="type"
       :maxlength="maxLength"
       :loading="loading"
       @focus="onFocusChanged(true)"
@@ -16,6 +17,7 @@
       <div v-show="showButtons" class="q-mt-sm">
         <q-btn
           label="Update"
+          color="deep-purple-4"
           text-color="white"
           :style="{ background: updateButtonColor }"
           :disable="hasError()"
@@ -52,6 +54,9 @@ export default class SettingsConfirmationField extends Vue {
 
   @Prop({ type: Boolean, default: false })
   loading!: boolean;
+
+  @Prop({ type: String, default: 'text' })
+  type!: string;
 
   internalValue = this.value;
 

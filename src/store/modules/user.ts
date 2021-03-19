@@ -7,11 +7,14 @@ import LogoutMutation from '@/graphql/Logout.gql';
 import MeQuery from '@/graphql/Me.gql';
 import TokensQuery from '@/graphql/Tokens.gql';
 import UpdateUserInfoMutation from '@/graphql/UpdateUserInfo.gql';
+import UpdateAvatar from '@/graphql/UpdateAvatar.gql';
+import ChangePassword from '@/graphql/ChangePassword.gql';
 import store from '@/store';
 import { GraphQLError, StatusType } from '@xbeat/client-toolkit';
 import { HttpStatus, isNil, isNull, Nullable } from '@xbeat/toolkit';
 import Vue from 'vue';
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import MediaEndpoint from '@/common/endpoints/media';
 
 @Module({ dynamic: true, store, name: 'user', namespaced: true })
 export class User extends VuexModule implements InitializeStore {
@@ -44,6 +47,11 @@ export class User extends VuexModule implements InitializeStore {
   @Mutation
   SET_USER(user: UserType) {
     this.identity = { ...user };
+  }
+
+  @Mutation
+  SET_AVATAR(avatar: Nullable<string>) {
+    Vue.set(this.identity as UserType, 'avatar', avatar);
   }
 
   @Mutation
@@ -166,6 +174,37 @@ export class User extends VuexModule implements InitializeStore {
       await this.fetchTokens();
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  @Action
+  async updateAvatar(image: Nullable<Blob>) {
+    try {
+      let avatar = null;
+
+      if (!isNull(image)) {
+        const {
+          data: {
+            files: [avatarUrl]
+          }
+        } = await MediaEndpoint.uploadImage(image);
+        avatar = avatarUrl;
+      }
+
+      await passport.mutate({ mutation: UpdateAvatar, variables: { avatar } });
+
+      this.SET_AVATAR(avatar);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  @Action
+  async changePassword(passwordInput: { oldPassword: string; newPassword: string; newPasswordConfirmation: string }) {
+    try {
+      return await passport.mutate({ mutation: ChangePassword, variables: { passwordInput } });
+    } catch (e) {
+      return e;
     }
   }
 

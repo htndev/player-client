@@ -1,0 +1,5 @@
+mutation updateAvatar($avatar: String) {
+  updateAvatar(avatar: $avatar) {
+    message
+  }
+}
