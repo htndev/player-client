@@ -31,6 +31,11 @@
             </q-item-label>
           </q-item>
           <q-item class="items-center justify-end" clickable>
+            <q-item-label lines="1">
+              <a :href="artistUrl" class="text-decoration-none color-black">{{ $t('go-to-artist') }}</a>
+            </q-item-label>
+          </q-item>
+          <q-item class="items-center justify-end" clickable>
             <q-item-label lines="1" @click="logout">{{ $t('logout') }}</q-item-label>
           </q-item>
         </template>
@@ -47,11 +52,14 @@ import { UserModule } from '@/store/modules/user';
 import { DrawerModule } from '@/store/modules/drawer';
 import { User } from '@/common/types';
 import { Nullable } from '@xbeat/toolkit';
+import { CLIENTS } from '@/common/constants/constants';
 
 @Component({
   components: { Logo, Avatar }
 })
 export default class TheHeader extends Vue {
+  artistUrl = CLIENTS.ARTIST;
+
   get user(): Nullable<User> {
     return UserModule.user;
   }
