@@ -1,0 +1,5 @@
+mutation createPlaylist($playlist: NewPlaylistInput!) {
+  createPlaylist(newPlaylistInput: $playlist) {
+    status
+  }
+}

@@ -1,0 +1,5 @@
+mutation updatePlaylistCover($input: PlaylistCoverUpload!) {
+  updatePlaylistCover(input: $input) {
+    status
+  }
+}

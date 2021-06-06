@@ -11,7 +11,7 @@
       <navigation-drawer-item class="q-pa-none" :clickable="false">
         <template>
           <q-expansion-item
-            :label="$tc('playlist', 2)"
+            :label="$tc('playlist.title', 2)"
             :caption="$tc('playlists-amount', playlists.length, { amount: playlists.length })"
             dense-toggle
             default-opened
@@ -21,6 +21,7 @@
                 <template v-slot="{ item }">
                   <router-link :to="item.link" class="p-16 block text-decoration-none color-black">
                     <playing-indication :active="item.active" :visible="item.active" />
+                    <q-icon :name="item.icon" class="q-mx-xs" outlined />
                     {{ item.title }}
                   </router-link>
                 </template>
@@ -48,8 +49,11 @@ import PlayingIndication from '@/components/Common/PlayingIndication.vue';
 import { DrawerModule } from '@/store/modules/drawer';
 import { UserModule } from '@/store/modules/user';
 import { User } from '@/common/types';
-import { Nullable } from '@xbeat/toolkit';
+import { isNull, Nullable } from '@xbeat/toolkit';
 import { TranslateResult } from 'vue-i18n';
+import { PlaylistModule } from '@/store/modules/playlist';
+import { Playlist } from '@/common/entities/playlist';
+import { PlayerModule } from '@/store/modules/player';
 
 @Component({ components: { NavigationDrawerItem, PlayingIndication } })
 export default class NavigationDrawer extends Vue {
@@ -73,24 +77,23 @@ export default class NavigationDrawer extends Vue {
     return this.user ? this.user.username : '';
   }
 
-  get userMusicLink(): string {
-    return `/${this.username}/music`;
-  }
-
   get baseNavigationItems(): { text: TranslateResult; to: string; icon: string }[] {
     return [
-      { text: this.$t('home'), to: '/', icon: 'home' },
-      { text: this.$t('recently-played'), to: '/recent', icon: 'settings_backup_restore' },
       { text: this.$t('browse'), to: '/browse', icon: 'explore' },
-      { text: this.$t('my-music'), to: this.userMusicLink, icon: 'library_music' }
+      { text: this.$t('my-music'), to: '/p', icon: 'library_music' }
     ];
   }
 
-  get playlists(): { title: string; link: string; active: boolean }[] {
-    return Array.from({ length: 20 }, (v, i) => ({
-      title: `Playlist ${i + 1}`,
-      link: `/p/qwe/${i + 1}`,
-      active: Math.random() > 0.5
+  get currentPlayingPlaylist(): Nullable<Playlist> {
+    return PlayerModule.playlist;
+  }
+
+  get playlists(): { title: string; link: string; active: boolean; icon: string }[] {
+    return PlaylistModule.playlists.map(({ title, url, isPublic }) => ({
+      title,
+      link: `/p/${url}`,
+      icon: isPublic ? 'public' : 'lock',
+      active: !isNull(this.currentPlayingPlaylist) && this.currentPlayingPlaylist.url === url
     }));
   }
 

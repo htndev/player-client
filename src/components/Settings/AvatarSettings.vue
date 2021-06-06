@@ -28,6 +28,7 @@ import ImageCropperPopup from '@/components/Common/ImageCropperPopup.vue';
 import Avatar from '@/components/Common/Avatar.vue';
 import { UserModule } from '@/store/modules/user';
 import { isNil, Nullable } from '@xbeat/toolkit';
+import convert from 'convert-size';
 
 const MAX_AVATAR_SIZE = 1000000;
 
@@ -81,7 +82,13 @@ export default class AvatarSettings extends Vue {
 
       const [file] = [...files];
       if (file.size > MAX_AVATAR_SIZE) {
-        this.$q.notify({ message: 'File is too big.', type: 'negative', position: 'bottom-right' });
+        this.$q.notify({
+          message: this.$t('settings.avatar.section.max-file-size', {
+            size: convert(MAX_AVATAR_SIZE, { accuracy: 0 })
+          }) as string,
+          type: 'negative',
+          position: 'bottom-right'
+        });
         return;
       }
 
