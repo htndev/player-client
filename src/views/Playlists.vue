@@ -11,12 +11,12 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn :label="$t('close')" @click="closePopup" flat />
-          <q-btn :label="$t('create')" @click="createPlaylist" :loading="isPlaylistCreatingLoading" />
+          <q-btn :label="$t('create-playlist')" @click="createPlaylist" :loading="isPlaylistCreatingLoading" />
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <div class="playlists__grid">
-      <template v-if="hasAlbums">
+    <template v-if="hasAlbums">
+      <div class="playlists__grid">
         <playlist-plate
           v-for="playlist in playlists"
           :key="playlist.url"
@@ -25,9 +25,12 @@
           :cover="playlist.cover"
         />
         <span class="playlists__create-new" @click="openPopup"><q-icon name="add" />{{ $t('create-playlist') }}</span>
-      </template>
-      <h3 class="text-center" v-else>{{ $t('playlist.no-playlists') }}</h3>
-    </div>
+      </div>
+    </template>
+    <template v-else>
+      <h3 class="text-center">{{ $t('playlist.no-playlists') }}</h3>
+      <div class="row justify-center"><q-btn :label="$t('create-playlist')" @click="openPopup" /></div>
+    </template>
   </div>
 </template>
 
