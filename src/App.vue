@@ -25,5 +25,6 @@ export default class App extends Vue {}
 <style lang="less" scoped>
 .app-container {
   position: relative;
+  padding-bottom: 120px;
 }
 </style>

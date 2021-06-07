@@ -193,6 +193,7 @@ export default class Player extends Vue {
   position: fixed;
   bottom: 0;
   right: 0;
+  z-index: 3;
   width: calc(100% - 300px);
   height: 100px;
   background: @light-gray;

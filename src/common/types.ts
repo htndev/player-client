@@ -62,3 +62,11 @@ export interface RawPlaylist {
   owner: User;
   songs: RawSong[];
 }
+
+export interface ArtistType {
+  name: string;
+  url: string;
+  avatar: Nullable<string>;
+  header: Nullable<string>;
+  albums: { name: string; url: string; cover: Nullable<string> }[];
+}

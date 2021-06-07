@@ -1,0 +1,5 @@
+mutation removeSongFromPlaylist($input: PlaylistSongInput!) {
+  removeSongFromPlaylist(playlistSongInput: $input) {
+    status
+  }
+}

@@ -1,0 +1,41 @@
+query search($query: String!) {
+  search(query: $query) {
+    artists {
+      name
+      url
+      avatar
+    }
+    songs {
+      name
+      url
+      feat {
+        name
+      }
+      artist {
+        name
+      }
+      album {
+        cover
+        name
+        url
+      }
+    }
+    albums {
+      name
+      url
+      cover
+      songs {
+        name
+      }
+      artist {
+        name
+        url
+      }
+    }
+    playlists {
+      title
+      cover
+      url
+    }
+  }
+}

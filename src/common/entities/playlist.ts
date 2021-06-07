@@ -2,7 +2,7 @@ import { PlaylistType } from '@/common/constants/playlist';
 import { RawSong, User } from '@/common/types';
 import i18n from '@/plugins/i18n';
 import { UserModule } from '@/store/modules/user';
-import { Nullable, PlaylistAvailability } from '@xbeat/toolkit';
+import { Nullable, PlaylistAvailability, isNull } from '@xbeat/toolkit';
 import { TranslateResult } from 'vue-i18n';
 
 import { Album } from './album';
@@ -14,7 +14,7 @@ export class Playlist {
     public readonly title: string,
     public readonly url: string,
     public readonly availability: PlaylistAvailability,
-    public readonly owner: User,
+    public readonly owner: Nullable<User>,
     public cover: Nullable<string>,
     public readonly _songs: RawSong[]
   ) {}
@@ -40,7 +40,7 @@ export class Playlist {
   }
 
   get isOwnPlaylist(): boolean {
-    return UserModule.user!.username === this.owner.username;
+    return !isNull(this.owner) && UserModule.user!.username === this.owner.username;
   }
 
   get songs(): Song[] {

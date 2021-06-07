@@ -1,0 +1,6 @@
+mutation addSongToPlaylist($input: PlaylistSongInput!) {
+  addSongToPlaylist(newSongPlaylistInput: $input) {
+    status
+    message
+  }
+}

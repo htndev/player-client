@@ -4,7 +4,6 @@ import { UserModule } from '@/store/modules/user';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 
-import Home from '../views/Home.vue';
 import { PlaylistModule } from './../store/modules/playlist';
 
 Vue.use(VueRouter);
@@ -17,7 +16,9 @@ const Route = {
   Settings: 'Settings',
   About: 'About',
   Home: 'Home',
-  NotFound: 'NotFound'
+  NotFound: 'NotFound',
+  Artist: 'Artist',
+  Album: 'Album'
 };
 
 const routes: Array<RouteConfig> = [
@@ -33,9 +34,14 @@ const routes: Array<RouteConfig> = [
     component: () => import(/* webpackChunkName: "playlist" */ '../views/Playlist.vue')
   },
   {
-    path: '/about',
-    name: Route.About,
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/a/:id',
+    name: Route.Artist,
+    component: () => import(/* webpackChunkName: "artist" */ '../views/Artist.vue')
+  },
+  {
+    path: '/album/:id',
+    name: Route.Album,
+    component: () => import(/* webpackChunkName: "album" */ '../views/Album.vue')
   },
   {
     path: '/settings',
@@ -46,11 +52,6 @@ const routes: Array<RouteConfig> = [
     path: '/browse',
     name: Route.Browse,
     component: () => import(/* webpackChunkName: "browse" */ '../views/Browse.vue')
-  },
-  {
-    path: '/liked',
-    name: Route.LikedSongs,
-    component: () => import(/* webpackChunkName: "liked" */ '../views/Liked.vue')
   },
   {
     path: '*',

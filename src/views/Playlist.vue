@@ -14,13 +14,13 @@
       <h1 class="q-ma-none q-ml-lg q-mt-auto">{{ name }}</h1>
     </div>
 
-    <playlist-songs :songs="songs" @song:control="controlSong" @song:change="changeSong" />
+    <playlist-songs type="playlist" :songs="songs" @song:control="controlSong" @song:change="changeSong" />
   </div>
 </template>
 
 <script lang="ts">
 import { PlaylistModule } from '@/store/modules/playlist';
-import { isNil, Nullable } from '@xbeat/toolkit';
+import { isNil, isNull, Nullable } from '@xbeat/toolkit';
 import { Component, Vue } from 'vue-property-decorator';
 import { Playlist as PlaylistEntity } from '@/common/entities/playlist';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -51,7 +51,7 @@ export default class Playlist extends Vue {
   }
 
   get isOwnPlaylist(): boolean {
-    return this.playlist.owner.username === this.user?.username;
+    return !isNull(this.playlist.owner) && this.playlist.owner.username === this.user?.username;
   }
 
   get name(): string {
@@ -136,6 +136,7 @@ export default class Playlist extends Vue {
       display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
       opacity: 0;
       font-size: 1.5em;
       color: @white;

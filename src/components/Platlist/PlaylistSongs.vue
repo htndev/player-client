@@ -4,7 +4,7 @@
       :columns="columns"
       :data="formatedSong"
       :pagination="{ rowsPerPage: 0 }"
-      :no-data-label="$t('playlist.no-songs-in-playlist')"
+      :no-data-label="$t('playlist.no-songs')"
       class="playlist-songs__table"
       hide-pagination
     >
@@ -23,7 +23,7 @@
             </span>
           </q-td>
           <q-td key="title" :props="props">
-            <q-img :src="props.row.cover" width="40px" class="q-mr-md" />
+            <q-img v-if="isPlaylist" :src="props.row.cover" width="40px" class="q-mr-md" />
             <span>{{ props.row.title }}</span>
           </q-td>
           <q-td key="artist" :props="props">
@@ -40,13 +40,36 @@
           <q-td key="duration" :props="props">{{ props.row.duration | formatDuration }}</q-td>
           <q-menu touch-position context-menu>
             <q-list style="min-width: 100px">
+              <template v-if="isPlaylist">
+                <q-item clickable v-close-popup>
+                  <q-item-section @click="removeSongFromPlaylist(props.row.url)">
+                    {{ $t('player.menu.remove-song') }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-if="isAlbum">
+                <q-item clickable>
+                  <q-item-section>{{ $t('player.menu.add-song') }}</q-item-section>
+                  <q-item-section side>
+                    <q-icon name="keyboard_arrow_right" />
+                  </q-item-section>
+                  <q-menu anchor="top end" self="top start">
+                    <q-list>
+                      <q-item
+                        v-for="playlist in getFilterPlaylists(props.row.url)"
+                        :key="playlist.url"
+                        clickable
+                        v-close-popup
+                        @click="addSongToPlaylist({ url: props.row.url, playlist: playlist.url })"
+                      >
+                        <q-item-section>{{ playlist.title }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
+                </q-item>
+              </template>
               <q-item clickable v-close-popup>
-                <q-item-section @click="removeSongFromPlaylist(props.row.url)">
-                  {{ $t('player.menu.remove-song') }}
-                </q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section @click="copyShareLink(props.row.url)">
+                <q-item-section @click="copyShareLink({ url: props.row.url, album: props.row.album.url })">
                   {{ $t('player.menu.share-link') }}
                 </q-item-section>
               </q-item>
@@ -67,6 +90,12 @@ import { isNull, Nullable } from '@xbeat/toolkit';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import DEFAULT_ALBUM_PLACEHOLDER from '@/assets/images/svg/ALBUM_PLACEHOLDER.svg';
+import copy from 'copy-to-clipboard';
+import { PlaylistModule } from '@/store/modules/playlist';
+import { Playlist } from '@/common/entities/playlist';
+import AddSongToPlaylistMutation from '@/graphql/AddSongToPlaylist.gql';
+import RemoveSongFromPlaylistMutation from '@/graphql/RemoveSongFromPlaylist.gql';
+import { TranslateResult } from 'vue-i18n';
 
 type TextUrlType = { text: string; url: string };
 
@@ -75,13 +104,15 @@ interface SongType {
   title: string;
   artist: TextUrlType[];
   album: { text: string; url: string };
-  duration: number;
 }
 
 @Component({ mixins: [FormatFilter] })
 export default class PlaylistSongs extends Vue {
   @Prop({ type: Array })
   songs!: Song[];
+
+  @Prop({ type: String })
+  type!: 'playlist' | 'album';
 
   hoveringItem = -1;
 
@@ -108,13 +139,6 @@ export default class PlaylistSongs extends Vue {
         label: this.$t('player.field.album'),
         align: 'left',
         sortable: true
-      },
-      {
-        name: 'duration',
-        required: true,
-        label: this.$t('player.field.duration'),
-        align: 'left',
-        sortable: true
       }
     ];
   }
@@ -125,6 +149,14 @@ export default class PlaylistSongs extends Vue {
 
   get isCurrentSongPlaying(): boolean {
     return PlayerModule.isPlaying;
+  }
+
+  get isAlbum(): boolean {
+    return this.type === 'album';
+  }
+
+  get isPlaylist(): boolean {
+    return this.type === 'playlist';
   }
 
   get formatedSong(): SongType[] {
@@ -138,12 +170,15 @@ export default class PlaylistSongs extends Vue {
         text: song.album.name,
         url: song.album.link
       },
-      duration: 0,
       artist: [
         { url: song.artist.link, text: song.artist.name },
         ...(song.hasFeats ? song.feat.map(feat => ({ text: feat.name, url: feat.link })) : [])
       ]
     }));
+  }
+
+  get playlists() {
+    return PlaylistModule.playlists;
   }
 
   getDisplayIcon(url: string): 'pause' | 'play_arrow' {
@@ -157,6 +192,10 @@ export default class PlaylistSongs extends Vue {
     }
 
     return 'play_arrow';
+  }
+
+  getFilterPlaylists(songUrl: string): Playlist[] {
+    return this.playlists.filter(playlist => playlist.songs.filter(song => song.url === songUrl).length === 0);
   }
 
   changeSong({ url }: { url: string }): void {
@@ -185,12 +224,31 @@ export default class PlaylistSongs extends Vue {
     this.hoveringItem = hoveringItem;
   }
 
-  removeSongFromPlaylist(url: string) {
-    console.log('Remove song', url);
+  async removeSongFromPlaylist(url: string) {
+    await this.$apolloProvider.clients.studio.mutate({
+      mutation: RemoveSongFromPlaylistMutation,
+      variables: { input: { song: url, playlist: PlaylistModule.currentPlaylistUrl } }
+    });
+    await PlaylistModule.getCurrentUserPlaylists();
+    this.notify(this.$t('player.menu.removed-from-playlist'));
   }
 
-  copyShareLink(url: string) {
-    console.log('Copy', url);
+  copyShareLink({ url, album }: { album: string; url: string }) {
+    copy(`${location.origin}/album/${album}?track=${url}`);
+    this.notify(this.$t('player.menu.copied'));
+  }
+
+  async addSongToPlaylist({ url, playlist }: { url: string; playlist: string }): Promise<void> {
+    await this.$apolloProvider.clients.studio.mutate({
+      mutation: AddSongToPlaylistMutation,
+      variables: { input: { song: url, playlist } }
+    });
+    await PlaylistModule.getCurrentUserPlaylists();
+    this.notify(this.$t('player.menu.added-to-playlist'));
+  }
+
+  notify(message: TranslateResult): void {
+    this.$q.notify({ message: message as string, position: 'bottom-right', type: 'positive' });
   }
 }
 </script>

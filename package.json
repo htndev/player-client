@@ -16,6 +16,7 @@
     "@xbeat/toolkit": "file:../toolkit/xbeat-toolkit-1.0.0.tgz",
     "axios": "^0.21.1",
     "convert-size": "^1.1.5",
+    "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.6.5",
     "lodash": "^4.17.20",
     "omit-deep-lodash": "^1.1.5",

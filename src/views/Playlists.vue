@@ -1,6 +1,6 @@
 <template>
   <div class="playlists">
-    <h1>Playlists</h1>
+    <h1>{{ $t('search.playlists') }}</h1>
     <q-dialog v-model="showCreateNewPlaylistPopup">
       <q-card style="width: 400px">
         <q-card-section>
@@ -72,7 +72,6 @@ export default class Playlists extends Vue {
   }
 
   async createPlaylist(): Promise<void> {
-    console.log('New playlist', this.newPlaylistTitle);
     this.isPlaylistCreatingLoading = true;
     await PlaylistModule.createNew({ title: this.newPlaylistTitle });
     this.isPlaylistCreatingLoading = false;
