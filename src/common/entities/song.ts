@@ -1,3 +1,6 @@
+import { User } from '@/common/types';
+import { Nullable } from '@xbeat/toolkit';
+
 import { Album } from './album';
 import { Artist } from './artist';
 
@@ -9,7 +12,8 @@ export class Song {
     public readonly isReleased: boolean,
     public readonly album: Album,
     public readonly artist: Artist,
-    public readonly feat: Artist[]
+    public readonly feat: Artist[],
+    public readonly owner: Nullable<User>
   ) {}
 
   get hasFeats(): boolean {

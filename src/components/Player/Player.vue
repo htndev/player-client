@@ -118,6 +118,7 @@ export default class Player extends Vue {
 
     this.currentSongPosition = 0;
     this.audio = new Audio();
+    this.audio.volume = this.currentVolume;
     this.audio.addEventListener('playing', this.launchInterval.bind(this));
     this.audio.addEventListener('pause', this.stopInterval.bind(this));
     this.audio.addEventListener('ended', this.stopInterval.bind(this));
@@ -155,6 +156,9 @@ export default class Player extends Vue {
   }
 
   playPauseSong(): void {
+    if (!this.hasPlayingSong) {
+      return;
+    }
     this.isPlaying = !this.isPlaying;
   }
 

@@ -12,6 +12,11 @@
         <span v-if="isOwnPlaylist" @click="uploadFile">{{ $t('playlist.change-cover') }}</span>
       </div>
       <h1 class="q-ma-none q-ml-lg q-mt-auto">{{ name }}</h1>
+      <span class="q-mt-auto q-ml-md" v-if="isOwnPlaylist">
+        <span>{{ playlistAvaiabilityTitle[0] }}</span>
+        <q-toggle v-model="avaiabilityState" color="purple" />
+        <span>{{ playlistAvaiabilityTitle[1] }}</span>
+      </span>
     </div>
 
     <playlist-songs type="playlist" :songs="songs" @song:control="controlSong" @song:change="changeSong" />
@@ -20,7 +25,7 @@
 
 <script lang="ts">
 import { PlaylistModule } from '@/store/modules/playlist';
-import { isNil, isNull, Nullable } from '@xbeat/toolkit';
+import { isNil, isNull, Nullable, PlaylistAvailability } from '@xbeat/toolkit';
 import { Component, Vue } from 'vue-property-decorator';
 import { Playlist as PlaylistEntity } from '@/common/entities/playlist';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -33,6 +38,7 @@ import { User } from '@/common/types';
 import { UserModule } from '@/store/modules/user';
 import ImageCropperPopup from '@/components/Common/ImageCropperPopup.vue';
 import convert from 'convert-size';
+import { TranslateResult } from 'vue-i18n';
 
 const MAX_AVATAR_SIZE = 1000000;
 
@@ -50,20 +56,47 @@ export default class Playlist extends Vue {
     return PlaylistModule.currentPlaylist as PlaylistEntity;
   }
 
+  get avaialableToDisplay(): boolean {
+    return !isNil(this.playlist);
+  }
+
   get isOwnPlaylist(): boolean {
-    return !isNull(this.playlist.owner) && this.playlist.owner.username === this.user?.username;
+    return !isNil(this.playlist)
+      ? !isNull(this.playlist.owner) && this.playlist.owner.username === this.user?.username
+      : false;
   }
 
   get name(): string {
-    return this.playlist.title;
+    return this.playlist?.title;
   }
 
   get songs(): Song[] {
-    return this.playlist.songs;
+    return this.playlist?.songs;
   }
 
   get safeImage(): string {
     return !isNil(this.playlist.cover) ? this.playlist.cover : DEFAULT_ALBUM_PLACEHOLDER;
+  }
+
+  get availability(): PlaylistAvailability {
+    return this.playlist.availability;
+  }
+
+  get avaiabilityState(): boolean {
+    return this.availability === PlaylistAvailability.Private;
+  }
+
+  set avaiabilityState(v: boolean) {
+    const state = v ? PlaylistAvailability.Private : PlaylistAvailability.Public;
+
+    PlaylistModule.updateAvailability(state);
+  }
+
+  get playlistAvaiabilityTitle(): { [k in PlaylistAvailability]: TranslateResult } {
+    return {
+      [PlaylistAvailability.Public]: this.$t('playlist.availability.public'),
+      [PlaylistAvailability.Private]: this.$t('playlist.availability.private')
+    };
   }
 
   controlSong(isPlaying: boolean): void {

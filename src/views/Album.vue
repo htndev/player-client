@@ -76,6 +76,12 @@ export default class Album extends Vue {
       query: FindAlbumsQuery,
       variables: { search: { url: this.albumId } }
     });
+
+    if (!album) {
+      this.$router.push('/404');
+      return;
+    }
+
     this.album = new AlbumEntity(album.name, album.url, album.cover, album.released);
     this.pseudoPlaylist = new Playlist(
       album.name,

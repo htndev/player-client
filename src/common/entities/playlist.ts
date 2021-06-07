@@ -53,7 +53,8 @@ export class Playlist {
           released,
           new Album(album.name, album.url, album.cover, album.released),
           new Artist(artist.name, artist.url, artist.avatar),
-          feat.map(({ name, url, avatar }) => new Artist(name, url, avatar))
+          feat.map(({ name, url, avatar }) => new Artist(name, url, avatar)),
+          this.owner
         )
     );
   }

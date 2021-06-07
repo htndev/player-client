@@ -40,7 +40,7 @@
           <q-td key="duration" :props="props">{{ props.row.duration | formatDuration }}</q-td>
           <q-menu touch-position context-menu>
             <q-list style="min-width: 100px">
-              <template v-if="isPlaylist">
+              <template v-if="isPlaylist && isOwnPlaylist">
                 <q-item clickable v-close-popup>
                   <q-item-section @click="removeSongFromPlaylist(props.row.url)">
                     {{ $t('player.menu.remove-song') }}
@@ -96,6 +96,8 @@ import { Playlist } from '@/common/entities/playlist';
 import AddSongToPlaylistMutation from '@/graphql/AddSongToPlaylist.gql';
 import RemoveSongFromPlaylistMutation from '@/graphql/RemoveSongFromPlaylist.gql';
 import { TranslateResult } from 'vue-i18n';
+import { User } from '@/common/types';
+import { UserModule } from '@/store/modules/user';
 
 type TextUrlType = { text: string; url: string };
 
@@ -143,6 +145,10 @@ export default class PlaylistSongs extends Vue {
     ];
   }
 
+  get hasSongs(): boolean {
+    return this.songs.length > 0;
+  }
+
   get currentPlaylingSong(): Nullable<Song> {
     return PlayerModule.song;
   }
@@ -157,6 +163,14 @@ export default class PlaylistSongs extends Vue {
 
   get isPlaylist(): boolean {
     return this.type === 'playlist';
+  }
+
+  get user(): User {
+    return UserModule.user as User;
+  }
+
+  get isOwnPlaylist(): boolean {
+    return this.hasSongs ? this.songs[0].owner?.username === this.user.username : false;
   }
 
   get formatedSong(): SongType[] {
